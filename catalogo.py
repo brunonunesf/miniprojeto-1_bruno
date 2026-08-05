@@ -16,12 +16,34 @@ class Catalogo:
             identificador = conteudo["id"]
             self.conteudos_por_id[identificador] = conteudo # conteudo eh um dicionario inteiro que eh adicionada em um valor de uma chave de outro
         self.usuarios_por_id = {}
+        self.ids_usuario_por_nome = {}
         for usuario in self.dados["usuarios"]:
             identificador = usuario["id"]
             self.usuarios_por_id[identificador] = usuario
-        self.fila = deque()
 
-catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
-print(len(catalogo.usuarios_por_id))
-print(catalogo.usuarios_por_id["u01"])
+            nome = usuario["nome"].lower()
+            self.ids_usuario_por_nome[nome] = identificador
+        self.fila = deque()
+    def listar_usuarios(self) -> list[str]: # '->' = RETORNA ; ou seja, a funcao retorna uma lista de strings
+        nomes = []
+        for usuario in self.usuarios_por_id.values():
+            nomes.append(usuario["nome"])
+        return sorted(nomes)
+    def buscar_usuario_por_nome(self, nome: str) -> str | None:
+        nome_normalizado = nome.lower()
+        return self.ids_usuario_por_nome.get(nome_normalizado) # .get() para nao dar erro se nao existir
+    
+    
+
+
+
+
+
+
+#testes -> executam so se eu rodar diretamente esse arquivo
+if __name__ == "__main__":
+    catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
+    print(catalogo.buscar_usuario_por_nome("Nicholas"))
+    print(catalogo.buscar_usuario_por_nome("NiCHoLas"))
+    print(catalogo.buscar_usuario_por_nome("Pessoa Inexistente"))
 
