@@ -35,13 +35,13 @@ class Catalogo:
         nome_normalizado = nome.lower()
         return self.ids_usuario_por_nome.get(nome_normalizado) # .get() para nao dar erro se nao existir
 
-    def playlist_de(self, usuario_id: str) -> list[str] | None:
+    def playlist_de(self, usuario_id: str) -> list[str] | None: # -> diz a playlist do usuario com o ID digitado
         usuario = self.usuarios_por_id.get(usuario_id)
         if usuario is None:
             return None
         return list(usuario["playlist"])
 
-    def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None:
+    def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None: # -> a faixa que esta em tal posicao na playlist de um usuario digitado pelo ID dele
         playlist = self.playlist_de(usuario_id)
         if playlist is None:
             return None
@@ -49,7 +49,7 @@ class Catalogo:
             return None
         return playlist[posicao]
 
-    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]:
+    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: # -> diz os ID's das musicas ou albuns semelhantes entre duas playlists de duas pessoas
         if not usuario_ids:
             return []
         conjuntos = []
@@ -63,7 +63,7 @@ class Catalogo:
                 itens_comuns = itens_comuns & conjunto
             return sorted(itens_comuns)
 
-    def rating_de(self, conteudo_id: str) -> float | None:
+    def rating_de(self, conteudo_id: str) -> float | None: # -> diz o rating de cada musica de acordo com o ID
         conteudo = self.conteudos_por_id.get(conteudo_id)
         if conteudo is None:
             return None
@@ -72,7 +72,7 @@ class Catalogo:
             return None
         return float(rating)
     
-    def duracao_total_de(self, conteudo_id: str) -> int | None:
+    def duracao_total_de(self, conteudo_id: str) -> int | None: # -> diz a duracao total da musica ou do album, com operacoes distintas dependendo do que for
         conteudo = self.conteudos_por_id.get(conteudo_id)
         if conteudo is None:
             return None
