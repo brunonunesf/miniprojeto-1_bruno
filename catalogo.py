@@ -117,6 +117,22 @@ class Catalogo:
         conteudos = self.conteudos_por_genero.get(genero, [])
         return sorted(conteudos)
 
+    def plataformas_de(self, conteudo_id: str) -> list[str] | None: # -> diz as plataformas que a faixa esta disponivel
+        conteudo = self.conteudos_por_id.get(conteudo_id)
+        if conteudo is None:
+            return None
+        plataformas = conteudo.get("plataformas", []) 
+        return sorted(plataformas)
+
+    def data_adicionado_de(self, conteudo_id: str) -> str | None:
+        conteudo = self.conteudos_por_id.get(conteudo_id)
+        if conteudo is None:
+            return None
+        data = conteudo["data_adicionado"]
+        if "/" not in data:
+            return data
+        dia, mes, ano = data.split("/")
+        return f"{ano}-{mes}-{dia}"
 
 
 
@@ -125,17 +141,8 @@ class Catalogo:
 #testes -> executam so se eu rodar diretamente esse arquivo
 if __name__ == "__main__":
     catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
-    print(catalogo._achatar_generos("Pop"))
-    print(catalogo._achatar_generos(["Rock", "Pop"]))
-    print(
-        catalogo._achatar_generos(
-            ["Pop", ["Synth-Pop", ["Dance"]]]
-        )
-    )
-
-    print(catalogo.generos_de("t000002")) # so pra constar que esse eh Cruel Summer da Taylor Swift -> MUSICAÇO DMS!    
-    print(catalogo.generos_de("t01"))
-    print(catalogo.conteudos_do_genero("Pop"))
-    print(catalogo.conteudos_do_genero("pop"))
-    print(catalogo.conteudos_do_genero("Funk"))
-    print(len(catalogo.conteudos_por_genero))
+    print(catalogo.plataformas_de("t000002"))
+    print(catalogo.plataformas_de("t01"))
+    print(catalogo.data_adicionado_de("t000002"))
+    print(catalogo.data_adicionado_de("t000009"))
+    print(catalogo.data_adicionado_de("t01"))
