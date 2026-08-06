@@ -44,6 +44,20 @@ class Catalogo:
         if 0 > posicao or posicao >= len(playlist): #por mais que python permita posicoes negativas, nao queremos para nao ficar confuso
             return None
         return playlist[posicao]
+    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]:
+        if not usuario_ids:
+            return []
+        conjuntos = []
+        for usuario_id in usuario_ids:
+            playlist = self.playlist_de(usuario_id)
+            if playlist is None:
+                return []
+            conjuntos.append(set(playlist)) #set tira duplicatas da lista
+            itens_comuns = conjuntos[0]
+            for conjunto in conjuntos[1:]: # pra percorrer os itens restantes da lista e ver udo o que tem de semelhante
+                itens_comuns = itens_comuns & conjunto
+            return sorted(itens_comuns)
+        
     
     
 
@@ -55,8 +69,7 @@ class Catalogo:
 #testes -> executam so se eu rodar diretamente esse arquivo
 if __name__ == "__main__":
     catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
-    playlist = catalogo.playlist_de("u01")
-    print(catalogo.conteudo_na_posicao("u01", 0))
-    print(catalogo.conteudo_na_posicao("u01", len(playlist)))
-    print(catalogo.conteudo_na_posicao("u01", -1))
-    print(catalogo.conteudo_na_posicao("u99", 0))
+    print(catalogo.intersecao_playlists(["u01", "u05"]))
+    print(catalogo.intersecao_playlists(["u01", "u99"]))
+    print(catalogo.intersecao_playlists([]))
+    print(catalogo.intersecao_playlists(["u01"]))
