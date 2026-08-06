@@ -25,6 +25,15 @@ class Catalogo:
             self.ids_usuario_por_nome[nome] = identificador
         self.fila = deque()
 
+        self.conteudos_por_genero = {}
+        for conteudo in self.dados["conteudos"]:
+            generos = self._achatar_generos(conteudo.get("generos", []))
+            for genero in generos:
+                if genero not in self.conteudos_por_genero:
+                    self.conteudos_por_genero[genero] = []
+                self.conteudos_por_genero[genero].append(conteudo["id"])
+
+
     def listar_usuarios(self) -> list[str]: # '->' = RETORNA ; ou seja, a funcao retorna uma lista de strings
         nomes = []
         for usuario in self.usuarios_por_id.values():
@@ -84,14 +93,49 @@ class Catalogo:
             if duracao is not None:
                 duracao_total += duracao
         return duracao_total
+
+    def _achatar_generos(self, valor) -> list[str]: # coloca os tipos de genero que uma musica tem em uma lista so, ja que eles podem vir em formato de lista dentro de lista
+        pendentes = [valor]
+        generos = []
+        while pendentes:
+            atual = pendentes.pop()
+            if isinstance(atual, str): #checa se a variavel eh do tipo depois da virgula
+                generos.append(atual)
+            if isinstance(atual, list):
+                pendentes.extend(atual) # se for uma lista, cada elemento separadamente vai ser adicionado em pendentes por causa do extend
+        return sorted(generos)
+
+    def generos_de(self, conteudo_id: str) -> list[str] | None: # diz os generos da musica e da forma "achatada"
+        conteudo = self.conteudos_por_id.get(conteudo_id)
+        if conteudo is None:
+            return None
+        generos = conteudo.get("generos", []) # -> o [] eh para caso o genero nao existir, ele retornar uma lista vazia
+        return self._achatar_generos(generos)
+
     
+    def conteudos_do_genero(self, genero: str) -> list[str]: # diz todas as faixas que pertencem a tal genero
+        conteudos = self.conteudos_por_genero.get(genero, [])
+        return sorted(conteudos)
+
+
+
+
 
 
 #testes -> executam so se eu rodar diretamente esse arquivo
 if __name__ == "__main__":
     catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
-    print(catalogo.rating_de("t000002"))
-    print(catalogo.rating_de("t01"))
-    print(catalogo.duracao_total_de("t000001"))
-    print(catalogo.duracao_total_de("t000003"))
-    print(catalogo.duracao_total_de("t01"))
+    print(catalogo._achatar_generos("Pop"))
+    print(catalogo._achatar_generos(["Rock", "Pop"]))
+    print(
+        catalogo._achatar_generos(
+            ["Pop", ["Synth-Pop", ["Dance"]]]
+        )
+    )
+
+    print(catalogo.generos_de("t000002")) # so pra constar que esse eh Cruel Summer da Taylor Swift -> MUSICAÇO DMS!    
+    print(catalogo.generos_de("t01"))
+    print(catalogo.conteudos_do_genero("Pop"))
+    print(catalogo.conteudos_do_genero("pop"))
+    print(catalogo.conteudos_do_genero("Funk"))
+    print(len(catalogo.conteudos_por_genero))
