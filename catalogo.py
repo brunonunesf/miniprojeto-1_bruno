@@ -23,7 +23,7 @@ class Catalogo:
 
             nome = usuario["nome"].lower()
             self.ids_usuario_por_nome[nome] = identificador
-        self.fila = deque()
+        self.fila = deque() # -> estrutura de dados mais otimizada de uma fila
 
         self.conteudos_por_genero = {}
         for conteudo in self.dados["conteudos"]:
@@ -124,7 +124,7 @@ class Catalogo:
         plataformas = conteudo.get("plataformas", []) 
         return sorted(plataformas)
 
-    def data_adicionado_de(self, conteudo_id: str) -> str | None:
+    def data_adicionado_de(self, conteudo_id: str) -> str | None: # -> diz a data da faixa, na maneira YYYY-MM-DD
         conteudo = self.conteudos_por_id.get(conteudo_id)
         if conteudo is None:
             return None
@@ -134,6 +134,35 @@ class Catalogo:
         dia, mes, ano = data.split("/")
         return f"{ano}-{mes}-{dia}"
 
+    def execucoes_de(self, conteudo_id: str) -> int | None: # -> quantas vezes a faixa foi executada -> albuns aparecem None 
+        conteudo = self.conteudos_por_id.get(conteudo_id)
+        if conteudo is None:
+            return None
+        engajamento = conteudo.get("engajamento")
+        if engajamento is None:
+            return None
+        execucoes = engajamento.get("execucoes")
+        if execucoes is None:
+            return None
+        if isinstance(execucoes, str):
+            execucoes = execucoes.replace(",", "") # -> substitui virgulas por espacos vazios caso o numero esteja na forma 102,091 por exemplo, ficando 102091
+        return int(execucoes)
+
+    def enfileirar(self, conteudo_id: str) -> bool: # -> adiciona na fila
+        if conteudo_id not in self.conteudos_por_id:
+            return False
+        self.fila.append(conteudo_id)
+        return True
+
+    def proximo(self) -> str | None: # -> remove o primeiro item da fila -> ordem FIFO
+        if not self.fila:
+            return None
+        return self.fila.popleft()
+
+    def fila_atual(self) -> list[str]:
+        return list(self.fila)
+
+
 
 
 
@@ -141,8 +170,21 @@ class Catalogo:
 #testes -> executam so se eu rodar diretamente esse arquivo
 if __name__ == "__main__":
     catalogo = Catalogo("catalogo_dev.json") # por isso que eh caminho_json: str, pois ele recebe uma string
-    print(catalogo.plataformas_de("t000002"))
-    print(catalogo.plataformas_de("t01"))
-    print(catalogo.data_adicionado_de("t000002"))
-    print(catalogo.data_adicionado_de("t000009"))
-    print(catalogo.data_adicionado_de("t01"))
+    print(catalogo.execucoes_de("t000002"))
+    print(catalogo.execucoes_de("t000009")) # album -> None
+    print(catalogo.execucoes_de("t01"))
+
+    print(catalogo.fila_atual())
+
+    print(catalogo.enfileirar("t000002"))
+    print(catalogo.enfileirar("t000009"))
+    print(catalogo.enfileirar("t000002"))
+    print(catalogo.enfileirar("id-inexistente")) # None
+
+    print(catalogo.fila_atual())
+    print(catalogo.proximo())
+    print(catalogo.fila_atual())
+
+    print(catalogo.proximo())
+    print(catalogo.proximo())
+    print(catalogo.proximo()) # None, pq nao tem mais nada pra tirar
