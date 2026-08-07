@@ -67,10 +67,10 @@ class Catalogo:
             if playlist is None:
                 return []
             conjuntos.append(set(playlist)) #set tira duplicatas da lista
-            itens_comuns = conjuntos[0]
-            for conjunto in conjuntos[1:]: # pra percorrer os itens restantes da lista e ver udo o que tem de semelhante
-                itens_comuns = itens_comuns & conjunto
-            return sorted(itens_comuns)
+        itens_comuns = conjuntos[0]
+        for conjunto in conjuntos[1:]: # pra percorrer os itens restantes da lista e ver udo o que tem de semelhante
+            itens_comuns = itens_comuns & conjunto
+        return sorted(itens_comuns)
 
     def rating_de(self, conteudo_id: str) -> float | None: # -> diz o rating de cada musica de acordo com o ID
         conteudo = self.conteudos_por_id.get(conteudo_id)
