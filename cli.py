@@ -78,10 +78,58 @@ def main() -> None:
             else:
                 print(catalogo.descricao_de(conteudo_id))
 
-        elif opcao == 4:
-            
+        elif opcao =="4":
+            entrada = input("Digite os nomes separados por vírgulas: ").strip()
+            nomes = [nome.strip() for nome in entrada.split(",") if nome.strip()]
+            usuario_ids = []
+            usuario_invalido = False
+            for nome in nomes:
+                usuario_id = catalogo.buscar_usuario_por_nome(nome)
+                if usuario_id is None:
+                    print(f"Usuário não encontrado: {nome}")
+                    usuario_invalido = True
+                    break
+                usuario_ids.append(usuario_id)
+            if usuario_invalido:
+                continue
+            intersecao = catalogo.intersecao_playlists(usuario_ids)
+            mostrar_conteudos(catalogo, intersecao)
+
+        elif opcao == "5":
+            conteudo_id = input("ID do conteúdo: ").strip()
+            descricao = catalogo.descricao_de(conteudo_id)
+            if descricao is None:
+                print("Conteúdo não encontrado")
+                continue
+            rating = catalogo.rating_de(conteudo_id)
+            plataformas = catalogo.plataformas_de(conteudo_id)
+            duracao = catalogo.duracao_total_de(conteudo_id)
+            generos = catalogo.generos_de(conteudo_id)
+            data = catalogo.data_adicionado_de(conteudo_id)
+            execucoes = catalogo.execucoes_de(conteudo_id)
+            print(f"Conteúdo: {descricao}")
+            print("Rating: ", end="")
+            if rating is None:
+                print("Não informado")
+            else:
+                print(rating)
+            print(f"Duração: {duracao}")
+            print(f"Gênero(s): {', '.join(generos)}")
+            print(f"Plataformas: {', '.join(plataformas)}")
+            print(f"Adicionado em: {data}")
+            if execucoes is not None:
+                print(f"Execuções: {execucoes:,}") #obs, isso foi uma sugestao da IA para que o numero 12500000 fique 12,500,00
+
+        elif opcao == "6":
+            genero = input("Digite um gênero: ").strip()
+            if not genero:
+                print("Digite um gênero...")
+                continue
+            conteudo_ids = catalogo.conteudos_do_genero(genero)
+            mostrar_conteudos(catalogo, conteudo_ids)
 
         
+
         else:
             print("Opção inválida.")
         
