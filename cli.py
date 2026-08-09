@@ -128,7 +128,31 @@ def main() -> None:
             conteudo_ids = catalogo.conteudos_do_genero(genero)
             mostrar_conteudos(catalogo, conteudo_ids)
 
-        
+        elif opcao == "7":
+            conteudo_id = input("ID do conteúdo: ").strip()
+            enfileirou = catalogo.enfileirar(conteudo_id)
+            if enfileirou:
+                descricao = catalogo.descricao_de(conteudo_id)
+                print(f"Adicionado à fila: {descricao}")
+            else:
+                print("Conteúdo não encontrado")
+
+        elif opcao == "8":
+            conteudo_id = catalogo.proximo()
+
+            if conteudo_id is None:
+                print("A fila está vazia")
+            else:
+                descricao = catalogo.descricao_de(conteudo_id)
+                print(f"Tocando agora: {descricao}")
+
+        elif opcao == "9":
+            fila = catalogo.fila_atual()
+            if not fila:
+                print(f"A fila está vazia")
+            else:
+                print("Fila de reprodução:")
+                mostrar_conteudos(catalogo, fila)
 
         else:
             print("Opção inválida.")
