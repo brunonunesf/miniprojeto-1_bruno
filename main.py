@@ -1,3 +1,4 @@
+
 import json # para transformar estruturas json em python
 import sys # para ler argumentos do terminal
 
