@@ -21,6 +21,14 @@ def mostrar_menu() -> None: # -> so pra exibir informacoes
     print("9. Ver fila atual")
     print("0. Sair")
 
+def mostrar_conteudos(catalogo: Catalogo, conteudo_ids: list[str]) -> None:
+    if not conteudo_ids:
+        print("Nenhum conteúdo encontrado")
+        return
+    for conteudo_id in conteudo_ids:
+        descricao = catalogo.descricao_de(conteudo_id)
+        print(f"- {descricao}")
+
 def main() -> None:
     if len(sys.argv) != 2:
         print("Uso: python3 cli.py catalogo_final.json")
@@ -34,12 +42,49 @@ def main() -> None:
         if opcao == "0":
             print("Até logo!")
             break
+
         if opcao == "1":
             usuarios = catalogo.listar_usuarios()
             for nome in usuarios:
                 print(f"- {nome}")
+
+        elif opcao == "2":
+            nome = input("Nome do usuário: ").strip()
+            usuario_id = catalogo.buscar_usuario_por_nome(nome)
+            if usuario_id is None:
+                print("Usuário não encontrado")
+            else:
+                playlist = catalogo.playlist_de(usuario_id)
+                mostrar_conteudos(catalogo, playlist) # playlist sera uma lista
+
+        elif opcao == "3":
+            nome = input("Nome do usuário: ").strip()
+            usuario_id = catalogo.buscar_usuario_por_nome(nome)
+            if usuario_id is None:
+                print("Usuário não encontrado")
+                continue
+            playlist = catalogo.playlist_de(usuario_id)
+            quantidade = len(playlist)
+            print(f"Playlist de {nome} tem {quantidade} itens (posições 1 a {quantidade}).")
+            entrada = input("Qual posição? > ").strip()
+            try:
+                posicao_humana = int(entrada)
+            except ValueError:
+                print("Digite uma posição numérica")
+                continue
+            conteudo_id = catalogo.conteudo_na_posicao(usuario_id, posicao_humana-1)
+            if conteudo_id is None:
+                print("Posição inválida")
+            else:
+                print(catalogo.descricao_de(conteudo_id))
+
+        elif opcao == 4:
+            
+
+        
         else:
             print("Opção inválida.")
+        
 
 
 if __name__ == "__main__":

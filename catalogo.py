@@ -162,6 +162,18 @@ class Catalogo:
     def fila_atual(self) -> list[str]:
         return list(self.fila)
 
+    def descricao_de(self, conteudo_id: str) -> str | None:
+        conteudo = self.conteudos_por_id.get(conteudo_id)
+        if conteudo is None:
+            return None
+        tipo = conteudo["tipo"]
+        if tipo == "album":
+            tipo = "álbum"
+        else:
+            tipo = "música"
+        return (f'{conteudo["titulo"]} de {conteudo["artista"]} ({tipo})')
+    
+
 
 
 
